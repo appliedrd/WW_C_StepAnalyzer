@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include "inc/Signal.h"
-
-#define SAMPLE_LENGTH 1000
+#include "inc/main.h"
 
 int main() {
     printf("Hello, World!\n");
@@ -14,7 +13,10 @@ int main() {
 
     int signals[SAMPLE_LENGTH];
 
-    doSignal(y, signals,  lag, threshold, influence);
+    init_signals(signals, y);
 
+    for (int i = LAG; i < SAMPLE_LENGTH; i++) {
+        doSignal(y[i], i, signals);
+    }
     return 0;
 }
