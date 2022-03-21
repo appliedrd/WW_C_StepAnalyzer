@@ -7,7 +7,7 @@
 #include "../inc/main.h"
 
 double stddev(double data[], int len);
-
+double stdDevSampleVariance(double data[], int len);
 double mean(double data[], int len);
 
 double avgFilter[ROWS];
@@ -82,7 +82,7 @@ int doSignal(double point, int i, int *signals) {
         filteredData[i] = point;
     }
     avgFilter[i] = mean(filteredData + i - LAG, LAG);
-    stdFilter[i] = stddev(filteredData + i - LAG, LAG);
+    stdFilter[i] = stdDevSampleVariance(filteredData + i - LAG, LAG);
 
     // fix from ahmed data June 8, 2020
     if ((point > MIN_DEGREES_SEC_FOR_PEAK) && (signals[i - 1] == (int) FOOT_SWING_THRESHOLD)) {
@@ -115,4 +115,15 @@ double stddev(double data[], int len) {
     }
 
     return sqrt(standardDeviation / len);
+}
+
+double stdDevSampleVariance(double data[], int len) {
+    double the_mean = mean(data, len);
+    double var = 0;
+    for( int i = 0; i < len; i++ )
+    {
+        var += (data[i] - the_mean) * (data[i] - the_mean);
+    }
+    var /= (len-1);
+    return sqrt(var);
 }
