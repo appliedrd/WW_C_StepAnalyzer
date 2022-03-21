@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "inc/Signal.h"
+#include "inc/ZscoreSignalDetector.h"
 #include "inc/FileProcess.h"
 #include "inc/main.h"
 
@@ -25,12 +27,14 @@ int main(int argc, char const *argv[]) {
     int num_rows = read_csv(fname, data);
     printf("%d\n", num_rows);
     matrixColtoArray(data, z, GYRO_Z_COLUMN, num_rows);
-
     init_signals(signals, z);
+    initStepDetector();
+    enum StepState thisStepState = LOOKING_FOR_STEP;
     double filtered = 0.0;
     for (int i = LAG; i < num_rows; i++) {
         filtered = lowpass_filter(FILTER_DIV, i+1, z[i], filtered);
         doSignal(filtered, i, signals);
+        thisStepState = doStepDetect(filtered, i, signals[i], thisStepState, true);
         if ( i == 20) {
             int here = 0;
         }
