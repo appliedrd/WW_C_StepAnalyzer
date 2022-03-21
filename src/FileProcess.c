@@ -4,31 +4,41 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../inc/main.h"
 
-const char* getfield(char* line, int num)
-{
-    const char* tok;
-    for (tok = strtok(line, ";");
-         tok && *tok;
-         tok = strtok(NULL, ";\n"))
-    {
-        if (!--num)
-            return tok;
-    }
-    return NULL;
+void clear_data(int rows, int cols, double data[][COLS]) {
+    for ( int i = 0; i < ROWS; i++ )
+        for ( int j = 0; j < COLS; j++ )
+            data[i][j] = 0;
 }
 
-void readCSV(float *z , char *filename)
-{
-    FILE* stream = fopen(filename, "r");
-
-    char line[1024];
-    while (fgets(line, 1024, stream))
+void matrixColtoArray(double data[][COLS], double a[], int col, int size) {
+    for(int i = 0; i < size; i++)
     {
-        char* tmp = strdup(line);
-        printf("Field 3 would be %s\n", getfield(tmp, 3));
-        // NOTE strtok clobbers tmp
-        free(tmp);
+        a[i] = data[i][col];
     }
 }
+
+int read_csv(char *filename, double data[][COLS]) {
+    FILE *file;
+    file = fopen(filename, "r");
+    int i = 0;
+    char line[4098];
+    fgets(line, 4098, file); // read header
+    while (fgets(line, 4098, file) && (i < ROWS)) {
+        int j = 0;
+        char* token = strtok(line, ",");
+        while (token != NULL) {
+            printf("%s\t", token);
+            if (j < COLS) {
+                data[i][j++] = atof(token);
+            }
+            token = strtok(NULL, ",");
+        }
+        printf("\n");
+        i++;
+    }
+    return i;
+}
+
 

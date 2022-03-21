@@ -3,65 +3,98 @@
 //
 #include <math.h>
 #include <string.h>
+#include <stdio.h>
 #include "../inc/main.h"
 
-float stddev(float data[], int len);
+double stddev(double data[], int len);
 
-float mean(float data[], int len);
+double mean(double data[], int len);
 
-float avgFilter[SAMPLE_LENGTH];
-float stdFilter[SAMPLE_LENGTH];
-float filteredY[SAMPLE_LENGTH];
+double avgFilter[ROWS];
+double stdFilter[ROWS];
+double filteredData[ROWS];
 
-void doSignalOLD(float y[], int *signals, int lag, float threshold, float influence) {
-    memset(signals, 0, sizeof(int) * SAMPLE_LENGTH);
-    memcpy(filteredY, y, sizeof(float) * SAMPLE_LENGTH);
-
-    avgFilter[lag - 1] = mean(y, lag);
-    stdFilter[lag - 1] = stddev(y, lag);
-
-    for (int i = lag; i < SAMPLE_LENGTH; i++) {
-        if (fabsf(y[i] - avgFilter[i - 1]) > threshold * stdFilter[i - 1]) {
-            if (y[i] > avgFilter[i - 1]) {
-                signals[i] = 1;
-            } else {
-                signals[i] = -1;
-            }
-            filteredY[i] = influence * y[i] + (1 - influence) * filteredY[i - 1];
-        } else {
-            signals[i] = 0;
-        }
-        avgFilter[i] = mean(filteredY + i - lag, lag);
-        stdFilter[i] = stddev(filteredY + i - lag, lag);
-    }
-}
-
-void init_signals(int *signals, float *y) {
-    memset(signals, 0, sizeof(int) * SAMPLE_LENGTH);
-    memcpy(filteredY, y, sizeof(float) * SAMPLE_LENGTH);
-
-    avgFilter[LAG - 1] = mean(y, LAG);
-    stdFilter[LAG - 1] = stddev(y, LAG);
-}
-
-void doSignal(float point, int i, int *signals) {
-    if (fabsf(point - avgFilter[i - 1]) > THRESHOLD * stdFilter[i - 1]) {
-        if (point > avgFilter[i - 1]) {
-            signals[i] = 1;
-        } else {
-            signals[i] = -1;
-        }
-        filteredY[i] = INFLUENCE * point + (1 - INFLUENCE) * filteredY[i - 1];
-    } else {
+void init_signals(int *signals, double *y) {
+    for (int i = 0; i++; i < ROWS) {
         signals[i] = 0;
+        filteredData[i] = 0;
+        avgFilter[i] = 0;
+        stdFilter[i] = 0;
     }
-    avgFilter[i] = mean(filteredY + i - LAG, LAG);
-    stdFilter[i] = stddev(filteredY + i - LAG, LAG);
+//    memset(signals, 0, sizeof(int) * ROWS);
+//    memcpy(filteredData, 0, sizeof(double) * ROWS);
+//
+//    avgFilter[LAG - 1] = mean(y, LAG);
+//    stdFilter[LAG - 1] = stddev(y, LAG);
+}
+
+void printSignal(int l, int i, double p, int s) {
+    printf("i: %d  p: %.3f s: %d \n", i, p , s);
+    printf("filt:" );
+    for (int j=i-l; j <=i; j++) {
+        printf(" %.3f", filteredData[j]);
+    }
+    printf("\n");
+    printf("avg :" );
+    for (int j=i-l; j <=i; j++) {
+        printf(" %.3f", avgFilter[j]);
+    }
+    printf("\n");
+    printf("std :" );
+    for (int j=i-l; j <=i; j++) {
+        printf(" %.3f", stdFilter[j]);
+    }
+    printf("\n");
+}
+
+double lowpass_filter(int filter_div, int i, double point, double filtered) {
+    if ((i % filter_div) == 0) {
+        filtered = point;
+    }
+    return(filtered);
 }
 
 
-float mean(float data[], int len) {
-    float sum = 0.0, mean = 0.0;
+int doSignal(double point, int i, int *signals) {
+    if (point == 0) {
+        signals[i] = 0;
+        return 0;
+    }
+    // if the distance between the current value and average is enough standard
+    // deviations (threshold) away
+    if (fabs(point) > MIN_DEGREES_SEC_FOR_PEAK &&
+       fabs(point - avgFilter[i - 1]) > THRESHOLD * stdFilter[i - 1]) {
+
+        // this is a signal (i.e. peak), determine if it is a positive or negative
+        // signal
+        if (point > avgFilter[i - 1]) {
+            signals[i] = (int) FOOT_SWING_THRESHOLD;
+        } else {
+            signals[i] =  (int) GOOD_SWING_THRESHOLD;
+        }
+
+        // filter this signal out using influence
+        filteredData[i] = INFLUENCE * point + (1 - INFLUENCE) * filteredData[i - 1];
+    } else {
+        // ensure this signal remains a zero
+        signals[i] = 0;
+        // ensure this value is not filtered
+        filteredData[i] = point;
+    }
+    avgFilter[i] = mean(filteredData + i - LAG, LAG);
+    stdFilter[i] = stddev(filteredData + i - LAG, LAG);
+
+    // fix from ahmed data June 8, 2020
+    if ((point > MIN_DEGREES_SEC_FOR_PEAK) && (signals[i - 1] == (int) FOOT_SWING_THRESHOLD)) {
+        signals[i] = (int) FOOT_SWING_THRESHOLD;
+    }
+    printSignal(LAG, i, point, signals[i]);
+    return signals[i];
+}
+
+
+double mean(double data[], int len) {
+    double sum = 0.0, mean = 0.0;
 
     int i;
     for (i = 0; i < len; ++i) {
@@ -72,9 +105,9 @@ float mean(float data[], int len) {
     return mean;
 }
 
-float stddev(float data[], int len) {
-    float the_mean = mean(data, len);
-    float standardDeviation = 0.0;
+double stddev(double data[], int len) {
+    double the_mean = mean(data, len);
+    double standardDeviation = 0.0;
 
     int i;
     for (i = 0; i < len; ++i) {
