@@ -6,6 +6,7 @@
 #include "inc/ZscoreSignalDetector.h"
 #include "inc/FileProcess.h"
 #include "inc/main.h"
+#include "inc/Plots.h"
 
 double data[ROWS][COLS];
 double z[ROWS];
@@ -16,6 +17,7 @@ float y[]=  {1,1,1.1,1,0.9,1,1,1.1,1,0.9,1,1.1,1,1,0.9,1,1,1.1,1,1,1,1,1.1,0.9,1
 
 
 int main(int argc, char const *argv[]) {
+
     printf("C version of Step Analyzer\n");
     /* code */
     if (argc < 1){
@@ -39,5 +41,6 @@ int main(int argc, char const *argv[]) {
             int here = 0;
         }
     }
+    testPlot();
     return 0;
 }
