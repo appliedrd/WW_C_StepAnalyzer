@@ -7,10 +7,8 @@
 #include "../inc/ZscoreSignalDetector.h"
 #include "../inc/main.h"
 
-double goodStepFilter[ROWS];
+extern double goodStepFilter[ROWS];
 double stepFilter[ROWS];
-double HeelStrikeValley[ROWS];
-double beep[ROWS];
 double heelOffPower[ROWS];
 double startSwing[ROWS];
 double stopSwing[ROWS];
@@ -73,10 +71,11 @@ const char* getStepStateName(enum StepState stepState)
 }
 
 
-enum StepState doStepDetect(double point, int i, int signal, enum StepState stepState, bool debug) {
+enum StepState doStepDetect(double point, int i, int signal, enum StepState stepState, bool debug,
+        double *HeelStrikeValley, double *beep) {
 
     if (debug)  {
-        printf("stepState %s  t: %d signal: %.3f point: %.3f \n",
+        printf("stepState %s  t: %d signal: %d point: %.3f \n",
                getStepStateName(stepState), i, signal, point);
     }
 
@@ -146,7 +145,7 @@ enum StepState doStepDetect(double point, int i, int signal, enum StepState step
             // do we still have a HEEL STRIKE?
             if (signal < 0) {
                 if (debug) {
-                    printf("t: $d signal: %.3f  point: %.3f\n", i, point, goodStepThreshold);
+                    printf("t: %d signal: %.3f  point: %.3f\n", i, point, goodStepThreshold);
                 }
 
                 if (point < minHeelValley) {
@@ -154,7 +153,7 @@ enum StepState doStepDetect(double point, int i, int signal, enum StepState step
                     minHeelValley = point;
                 }
                 if (point < goodStepThreshold && firstBeep) {
-                    beep[i] =  footSwingThreshold;
+                    beep[i] =  GOOD_SWING_THRESHOLD;
                     firstBeep = false;
                     /*
                      * uncomment for android if (beepSound > 0) soundMgr.playSound(beepSound);
@@ -167,23 +166,25 @@ enum StepState doStepDetect(double point, int i, int signal, enum StepState step
                 // TODO transition the reset of gait
             } else {
                 HeelStrikeValley[i] =  minHeelValley;
-                minHeelValley = 0.0;
                 stepState = FLAT_FOOT;
                 stateCount = SKIP_FLAT_FOOT_SAMPLES;
                 if (debug) {
                     printf("HEEL STRIKE timestamp: %d minHeelValley: %.3f\n",
                             i, minHeelValley);
                 }
+                minHeelValley = 0.0;
             }
             break;
+
         case FLAT_FOOT:
-            if (debug) printf("FLAT_FOOT s: %.3f\n", signal);
+            if (debug) printf("FLAT_FOOT s: %d\n", signal);
             stateCount--;
             if (signal < 0) {
                 stepState = HEEL_OFF;
                 stateCount = SKIP_HEEL_OFF_SAMPLES;
             }
             break;
+
         case HEEL_OFF:
             stateCount--;
             if (point < heelOffPowerMin) {

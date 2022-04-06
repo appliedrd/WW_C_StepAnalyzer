@@ -63,7 +63,7 @@ int doSignal(double point, int i, int *signals) {
     // if the distance between the current value and average is enough standard
     // deviations (threshold) away
     if (fabs(point) > MIN_DEGREES_SEC_FOR_PEAK &&
-       fabs(point - avgFilter[i - 1]) > THRESHOLD * stdFilter[i - 1]) {
+            (fabs(point - avgFilter[i - 1]) > THRESHOLD * stdFilter[i - 1])) {
 
         // this is a signal (i.e. peak), determine if it is a positive or negative
         // signal
@@ -81,14 +81,14 @@ int doSignal(double point, int i, int *signals) {
         // ensure this value is not filtered
         filteredData[i] = point;
     }
-    avgFilter[i] = mean(filteredData + i - LAG, LAG);
-    stdFilter[i] = stdDevSampleVariance(filteredData + i - LAG, LAG);
+    avgFilter[i] = mean(filteredData + i - LAG+1, LAG);
+    stdFilter[i] = stdDevSampleVariance(filteredData + i - LAG+1, LAG);
 
     // fix from ahmed data June 8, 2020
     if ((point > MIN_DEGREES_SEC_FOR_PEAK) && (signals[i - 1] == (int) FOOT_SWING_THRESHOLD)) {
         signals[i] = (int) FOOT_SWING_THRESHOLD;
     }
-    printSignal(LAG, i, point, signals[i]);
+    //printSignal(LAG, i, point, signals[i]);
     return signals[i];
 }
 

@@ -9,6 +9,8 @@ enum StepState {
     LOOKING_FOR_STEP, FOOT_SWING, POTENTIAL_HEEL_STRIKE, HEEL_STRIKE, FLAT_FOOT, HEEL_OFF,
 };
 void initStepDetector();
-enum StepState doStepDetect(double point, int i, int signal, enum StepState stepState, bool debug);
+enum StepState doStepDetect(double point, int i, int signal, enum StepState stepState, bool debug,
+        double *HeelStrikeValley, double *beep);
+
 
 
