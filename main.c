@@ -8,6 +8,8 @@
 #include "inc/main.h"
 #include "inc/Plots.h"
 
+extern int nSteps, ngood;
+
 double data[ROWS][COLS];
 double z[ROWS];
 int signals[ROWS];
@@ -46,6 +48,7 @@ int main(int argc, char const *argv[]) {
             int here = 0;
         }
     }
+    printf("steps = %d good steps = %d\n", nSteps, ngood);
 //    plotXY(signals, 1000, 1500);
  //   plotXY(z, 1000, 1500);
  //   plotXYint(signals, 1000, 1200);

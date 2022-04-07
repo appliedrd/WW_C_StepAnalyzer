@@ -24,6 +24,8 @@ int lastSignal;
 int stateCount;
 int inStepTimeout;
 
+int nSteps, ngood;
+
 bool foundStepStart;
 bool lookForNextStep;
 bool foundToeDown;
@@ -47,6 +49,8 @@ void initStepDetector() {
     maxFootSwing = 0.0;
     minHeelValley = 0.0;
     heelOffPowerMin = 0.0;
+    nSteps = 0;
+    ngood = 0;
 }
 
 double footSwingMeasurements(double point, int i, double maxFootSwing) {
@@ -139,6 +143,7 @@ enum StepState doStepDetect(double point, int i, int signal, enum StepState step
                        i, maxFootSwing);
             }
             if (firstBelow) {
+                nSteps++;
                 firstBelow = false;
                 maxFootSwing = footSwingMeasurements(point, i, maxFootSwing);
             }
@@ -152,7 +157,8 @@ enum StepState doStepDetect(double point, int i, int signal, enum StepState step
                     goodStepFilter[i] =  HEEL_STRIKE_VALLEY_INDICATOR;
                     minHeelValley = point;
                 }
-                if (point < goodStepThreshold && firstBeep) {
+                if (point < GOOD_SWING_THRESHOLD && firstBeep) {
+                    ngood++;
                     beep[i] =  GOOD_SWING_THRESHOLD;
                     firstBeep = false;
                     /*
