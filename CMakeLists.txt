@@ -6,5 +6,5 @@ set(CMAKE_C_STANDARD 99)
 add_executable(WW_C_StepAnalyzer main.c src/IMU_Signal.c inc/IMU_Signal.h inc/main.h
         src/FileProcess.c inc/FileProcess.h
         src/IMU_ZscoreSignalDetector.c inc/IMU_ZscoreSignalDetector.h
-        src/Plots.c inc/Plots.h)
+        src/Plots.c inc/Plots.h src/jenniferZ.c)
 target_link_libraries(WW_C_StepAnalyzer m)

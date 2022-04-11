@@ -23,7 +23,6 @@ double goodStepThreshold;
 double maxFootSwing;
 double minHeelValley;
 double heelOffPowerMin;
-int lastSignal;
 int stateCount;
 int inStepTimeout;
 
