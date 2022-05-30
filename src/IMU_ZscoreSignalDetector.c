@@ -4,7 +4,7 @@
 
 #include <stdbool.h>
 #include <stdio.h>
-#include "../inc/IMU_ZscoreSignalDetector.h"
+#include "../inc/ZscoreSignalDetector.h"
 #include "../inc/main.h"
 
 //extern double goodStepFilter[ROWS];
