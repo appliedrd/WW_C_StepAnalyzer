@@ -7,6 +7,8 @@
 #include <stdbool.h>
 #include "../inc/read_allStepAnalytics.h"
 
+#define MANUAL_MERGE 1
+
 int read_allStepAnalytics(char * fname, all_steps_t * step_records, int * total_records ) {
     FILE *fp;
     size_t count = 0;
@@ -39,10 +41,17 @@ int read_allStepAnalytics(char * fname, all_steps_t * step_records, int * total_
             useFile = true;
         }
         if (useFile) {
-            //printf("%s client: %s foot: %s fname: %s \n",foot,  tokens[3], tokens[5], tokens[8]);
-            strcpy(step_records[count].client, tokens[3]);
-            strcpy(step_records[count].foot, tokens[5]);
-            strcpy(step_records[count].fname, tokens[8]);
+            if (MANUAL_MERGE) {
+                printf("%s client: %s foot: %s fname: %s \n", foot, tokens[3], tokens[5], tokens[1]);
+                strcpy(step_records[count].client, tokens[3]);
+                strcpy(step_records[count].foot, tokens[5]);
+                strcpy(step_records[count].fname, tokens[1]);
+            } else {
+                printf("%s client: %s foot: %s fname: %s \n", foot, tokens[3], tokens[5], tokens[8]);
+                strcpy(step_records[count].client, tokens[3]);
+                strcpy(step_records[count].foot, tokens[5]);
+                strcpy(step_records[count].fname, tokens[8]);
+        }
             count++;
         }
     }
