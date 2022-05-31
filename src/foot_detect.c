@@ -2,11 +2,8 @@
 // Created by tedhi on 5/27/2022.
 //
 #include <stdio.h>
-#include "../inc/accumulative_avg.h"
+#include "../inc/foot_detect.h"
 
-#define IDLE_WINDOW 100
-#define MIN_ACC_DIFF 0.500
-#define MIN_ACC 0.750
 double accY_accumulator = 0;
 double accY_avg = 0;
 double accZ_accumulator = 0;

@@ -8,6 +8,6 @@ add_executable(WW_C_StepAnalyzer main.c src/IMU_Signal.c inc/IMU_Signal.h inc/ma
         src/sensor_csv.c inc/sensor_csv.h
         src/IMU_ZscoreSignalDetector.c inc/IMU_ZscoreSignalDetector.h
         src/Plots.c inc/Plots.h src/jenniferZ.c
-        src/accumulative_avg.c inc/accumulative_avg.h
+        src/foot_detect.c inc/foot_detect.h
         src/read_allStepAnalytics.c inc/read_allStepAnalytics.h)
 target_link_libraries(WW_C_StepAnalyzer m)

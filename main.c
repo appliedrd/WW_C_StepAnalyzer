@@ -8,7 +8,7 @@
 #include "inc/main.h"
 #include "inc/Plots.h"
 #include "inc/sensor_csv.h"
-#include "inc/accumulative_avg.h"
+#include "inc/foot_detect.h"
 #include <sys/time.h>
 #include "inc/read_allStepAnalytics.h"
 

@@ -3,6 +3,10 @@
 //
 
 #ifndef WW_C_STEPANALYZER_ACCUMULATIVE_AVG_H
+#define IDLE_WINDOW 100
+#define MIN_ACC_DIFF 0.500
+#define MIN_ACC 0.750
+
 typedef enum {
     ACCUMULATING = 'a',
     LEFT_FOOT = 'L',
